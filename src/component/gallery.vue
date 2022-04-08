@@ -2,7 +2,8 @@
   <div
     :id="id"
     class="blueimp-gallery blueimp-gallery-controls"
-    :class="{'blueimp-gallery-carousel': carousel}">
+    :class="{'blueimp-gallery-carousel': carousel}"
+  >
 
     <div class="slides"></div>
     <h3 class="title"></h3>
@@ -13,95 +14,105 @@
     <a class="next">
       <slot name="next">›</slot>
     </a>
-    <a v-if="!carousel" class="close">
+    <a
+      v-if="!carousel"
+      class="close"
+    >
       <slot name="close">×</slot>
     </a>
-    <ol v-if="!carousel" class="indicator"></ol>
-    <a v-if="carousel" class="play-pause"></a>
+    <ol
+      v-if="!carousel"
+      class="indicator"
+    ></ol>
+    <a
+      v-if="carousel"
+      class="play-pause"
+    ></a>
   </div>
 </template>
 
 <script>
-  import 'blueimp-gallery/css/blueimp-gallery.min.css';
-  import 'blueimp-gallery/js/blueimp-gallery-fullscreen.js';
-  import 'blueimp-gallery/js/blueimp-gallery-video.js';
-  import 'blueimp-gallery/js/blueimp-gallery-youtube.js';
-  import blueimp from 'blueimp-gallery/js/blueimp-gallery.js';
+import 'blueimp-gallery/css/blueimp-gallery.min.css';
+import 'blueimp-gallery/js/blueimp-gallery-fullscreen.js';
+import 'blueimp-gallery/js/blueimp-gallery-video.js';
+import 'blueimp-gallery/js/blueimp-gallery-youtube.js';
+import blueimp from 'blueimp-gallery/js/blueimp-gallery.js';
 
-  export default {
-    props: {
-      images: {
-        type: Array,
-        default() {
-          return [];
-        },
-      },
-
-      options: {
-        type: Object,
-        default() {
-          return {};
-        },
-      },
-
-      carousel: {
-        type: Boolean,
-        default: false,
-      },
-
-      index: {
-        type: Number,
-      },
-
-      id: {
-        type: String,
-        default: 'blueimp-gallery',
+export default {
+  props: {
+    images: {
+      type: Array,
+      default() {
+        return [];
       },
     },
 
-    data() {
-      return {
-        instance: null,
-      };
-    },
-
-    watch: {
-      index(value) {
-        if (this.carousel) {
-          return;
-        }
-
-        if (value !== null) {
-          this.open(value);
-        } else {
-          if (this.instance) {
-            this.instance.close();
-          }
-
-          this.$emit('close');
-        }
+    options: {
+      type: Object,
+      default() {
+        return {};
       },
     },
 
-    mounted() {
+    carousel: {
+      type: Boolean,
+      default: false,
+    },
+
+    index: {
+      type: Number,
+    },
+
+    id: {
+      type: String,
+      default: 'blueimp-gallery',
+    },
+  },
+
+  data() {
+    return {
+      instance: null,
+    };
+  },
+
+  watch: {
+    index(value) {
       if (this.carousel) {
-        this.open();
+        return;
+      }
+
+      if (value !== null) {
+        this.open(value);
+      } else {
+        if (this.instance) {
+          this.instance.close();
+        }
+
+        this.$emit('close');
       }
     },
+  },
 
-    destroyed() {
-      if (this.instance !== null) {
-        this.instance.destroyEventListeners();
-        this.instance.close();
-        this.instance = null;
-      }
-    },
+  mounted() {
+    if (this.carousel) {
+      this.open();
+    }
+  },
 
-    methods: {
-      open(index = 0) {
-        const instance = typeof blueimp.Gallery !== 'undefined' ? blueimp.Gallery : blueimp;
+  destroyed() {
+    if (this.instance !== null) {
+      this.instance.destroyEventListeners();
+      this.instance.close();
+      this.instance = null;
+    }
+  },
 
-        const options = Object.assign({
+  methods: {
+    open(index = 0) {
+      const instance = typeof blueimp.Gallery !== 'undefined' ? blueimp.Gallery : blueimp;
+
+      const options = Object.assign(
+        {
           toggleControlsOnReturn: false,
           toggleControlsOnSlideClick: false,
           closeOnSlideClick: false,
@@ -115,40 +126,63 @@
           onslidecomplete: (index, slide) => this.$emit('onslidecomplete', { index, slide }),
           onclose: () => this.$emit('close'),
           onclosed: () => this.$emit('onclosed'),
-        }, this.options);
+        },
+        this.options,
+      );
 
-        if (this.carousel) {
-          options.container = this.$el;
-        }
+      if (this.carousel) {
+        options.container = this.$el;
+      }
 
-        this.instance = instance(this.images, options);
-      },
-      onSlideCustom(index, slide) {
-        this.$emit('onslide', { index, slide });
+      this.instance = instance(this.images, options);
+    },
+    
+    onSlideCustom(index, slide) {
+      this.$emit('onslide', { index, slide });
 
-        const image = this.images[index];
-        if (image !== undefined) {
-          const text = image.description;
-          const node = this.instance.container.find('.description');
-          if (text) {
-            node.empty();
-            node[0].appendChild(document.createTextNode(text));
+      const image = this.images[index];
+
+      if (image !== undefined) {
+        const title = image.title;
+        const titleNode = this.instance.container.find('.title');
+        if (title) {
+          titleNode.empty();
+          if (image.titleType === 'html') {
+            let div = document.createElement('div');
+            div.innerHTML = title;
+            titleNode[0].appendChild(div);
+          } else {
+            titleNode[0].appendChild(document.createTextNode(title));
           }
         }
-      },
+
+        const description = image.description;
+        const descriptionNode = this.instance.container.find('.description');
+        if (description) {
+          descriptionNode.empty();
+          if (image.descriptionType === 'html') {
+            let div = document.createElement('div');
+            div.innerHTML = description;
+            descriptionNode[0].appendChild(div);
+          } else {
+            descriptionNode[0].appendChild(document.createTextNode(description));
+          }
+        }
+      }
     },
-  };
+  },
+};
 </script>
 
 <style>
-  .blueimp-gallery > .description {
-    position: absolute;
-    top: 30px;
-    left: 15px;
-    color: #fff;
-    display: none;
-  }
-  .blueimp-gallery-controls > .description {
-    display: block;
-  }
+.blueimp-gallery > .description {
+  position: absolute;
+  top: 45px;
+  left: 15px;
+  color: #fff;
+  display: none;
+}
+.blueimp-gallery-controls > .description {
+  display: block;
+}
 </style>

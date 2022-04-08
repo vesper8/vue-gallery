@@ -2,35 +2,35 @@
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('blueimp-gallery/css/blueimp-gallery.min.css'), require('blueimp-gallery/js/blueimp-gallery-fullscreen.js'), require('blueimp-gallery/js/blueimp-gallery-video.js'), require('blueimp-gallery/js/blueimp-gallery-youtube.js'), require('blueimp-gallery/js/blueimp-gallery.js')) :
   typeof define === 'function' && define.amd ? define(['blueimp-gallery/css/blueimp-gallery.min.css', 'blueimp-gallery/js/blueimp-gallery-fullscreen.js', 'blueimp-gallery/js/blueimp-gallery-video.js', 'blueimp-gallery/js/blueimp-gallery-youtube.js', 'blueimp-gallery/js/blueimp-gallery.js'], factory) :
   (global = global || self, global.VueGallery = factory(null, null, null, null, global.blueimp));
-}(this, function (blueimpGallery_min_css, blueimpGalleryFullscreen_js, blueimpGalleryVideo_js, blueimpGalleryYoutube_js, blueimp) { 'use strict';
+}(this, (function (blueimpGallery_min_css, blueimpGalleryFullscreen_js, blueimpGalleryVideo_js, blueimpGalleryYoutube_js, blueimp) { 'use strict';
 
-  blueimp = blueimp && blueimp.hasOwnProperty('default') ? blueimp['default'] : blueimp;
+  blueimp = blueimp && Object.prototype.hasOwnProperty.call(blueimp, 'default') ? blueimp['default'] : blueimp;
 
   //
   var script = {
     props: {
       images: {
         type: Array,
-        default: function _default() {
+        "default": function _default() {
           return [];
         }
       },
       options: {
         type: Object,
-        default: function _default() {
+        "default": function _default() {
           return {};
         }
       },
       carousel: {
         type: Boolean,
-        default: false
+        "default": false
       },
       index: {
         type: Number
       },
       id: {
         type: String,
-        default: 'blueimp-gallery'
+        "default": 'blueimp-gallery'
       }
     },
     data: function data() {
@@ -121,12 +121,35 @@
         var image = this.images[index];
 
         if (image !== undefined) {
-          var text = image.description;
-          var node = this.instance.container.find('.description');
+          var title = image.title;
+          var titleNode = this.instance.container.find('.title');
 
-          if (text) {
-            node.empty();
-            node[0].appendChild(document.createTextNode(text));
+          if (title) {
+            titleNode.empty();
+
+            if (image.titleType === 'html') {
+              var div = document.createElement('div');
+              div.innerHTML = title;
+              titleNode[0].appendChild(div);
+            } else {
+              titleNode[0].appendChild(document.createTextNode(title));
+            }
+          }
+
+          var description = image.description;
+          var descriptionNode = this.instance.container.find('.description');
+
+          if (description) {
+            descriptionNode.empty();
+
+            if (image.descriptionType === 'html') {
+              var _div = document.createElement('div');
+
+              _div.innerHTML = description;
+              descriptionNode[0].appendChild(_div);
+            } else {
+              descriptionNode[0].appendChild(document.createTextNode(description));
+            }
           }
         }
       }
@@ -274,13 +297,13 @@
   const __vue_script__ = script;
 
   /* template */
-  var __vue_render__ = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{staticClass:"blueimp-gallery blueimp-gallery-controls",class:{'blueimp-gallery-carousel': _vm.carousel},attrs:{"id":_vm.id}},[_c('div',{staticClass:"slides"}),_vm._v(" "),_c('h3',{staticClass:"title"}),_vm._v(" "),_c('p',{staticClass:"description"}),_vm._v(" "),_c('a',{staticClass:"prev"},[_vm._t("prev",[_vm._v("‹")])],2),_vm._v(" "),_c('a',{staticClass:"next"},[_vm._t("next",[_vm._v("›")])],2),_vm._v(" "),(!_vm.carousel)?_c('a',{staticClass:"close"},[_vm._t("close",[_vm._v("×")])],2):_vm._e(),_vm._v(" "),(!_vm.carousel)?_c('ol',{staticClass:"indicator"}):_vm._e(),_vm._v(" "),(_vm.carousel)?_c('a',{staticClass:"play-pause"}):_vm._e()])};
+  var __vue_render__ = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{staticClass:"blueimp-gallery blueimp-gallery-controls",class:{'blueimp-gallery-carousel': _vm.carousel},attrs:{"id":_vm.id}},[_c('div',{staticClass:"slides"}),_vm._v(" "),_c('h3',{staticClass:"title"}),_vm._v(" "),_c('p',{staticClass:"description"}),_vm._v(" "),_c('a',{staticClass:"prev"},[_vm._t("prev",function(){return [_vm._v("‹")]})],2),_vm._v(" "),_c('a',{staticClass:"next"},[_vm._t("next",function(){return [_vm._v("›")]})],2),_vm._v(" "),(!_vm.carousel)?_c('a',{staticClass:"close"},[_vm._t("close",function(){return [_vm._v("×")]})],2):_vm._e(),_vm._v(" "),(!_vm.carousel)?_c('ol',{staticClass:"indicator"}):_vm._e(),_vm._v(" "),(_vm.carousel)?_c('a',{staticClass:"play-pause"}):_vm._e()])};
   var __vue_staticRenderFns__ = [];
 
     /* style */
     const __vue_inject_styles__ = function (inject) {
       if (!inject) return
-      inject("data-v-6d2033ba_0", { source: ".blueimp-gallery>.description{position:absolute;top:30px;left:15px;color:#fff;display:none}.blueimp-gallery-controls>.description{display:block}", map: undefined, media: undefined });
+      inject("data-v-1ca00897_0", { source: ".blueimp-gallery>.description{position:absolute;top:45px;left:15px;color:#fff;display:none}.blueimp-gallery-controls>.description{display:block}", map: undefined, media: undefined });
 
     };
     /* scoped */
@@ -306,4 +329,4 @@
 
   return VueGallery;
 
-}));
+})));
